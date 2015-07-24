@@ -1,0 +1,16 @@
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\XChatCommunicator.exe.config
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\XChatCommunicator.exe
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\XChatCommunicator.pdb
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator.csprojResolveAssemblyReference.cache
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator_MarkupCompile.cache
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator.g.resources
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator.csproj.GenerateResource.Cache
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator.exe
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator.pdb
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatter.Properties.Resources.resources
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\HtmlAgilityPack.dll
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\HtmlAgilityPack.pdb
+D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\HtmlAgilityPack.xml
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Main\MainWindow.baml
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Main\MainWindow.g.cs
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator_MarkupCompile.lref

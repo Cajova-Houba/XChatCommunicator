@@ -1,0 +1,123 @@
+﻿<Window x:Class="XChatter.Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:src="clr-namespace:XChatter.Main"
+        Title="xChat" Height="800" Width="400">
+    <Grid   Background="#FFFCFDFE">
+        
+        <!-- celý obsah okna na mřížce 2*3-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- popisné labely -->
+        <Label  Content="xchat" 
+                Foreground="#FFFF8C02"
+                FontSize="26"
+                Margin="10,0,0,0"
+                
+                Grid.Column="0"
+                Grid.Row="0"
+                />
+        
+        <Label Content="kategorie:" 
+               Foreground="#FFFF8C02"
+               FontSize="15"
+               Margin="10,0,0,0"
+               VerticalAlignment="Bottom"
+               
+               Grid.Column="0"
+               Grid.Row="1"
+               />
+        
+        <!-- tlačítko zpět -->
+        <Button x:Name="btnBack" 
+                Content="Zpět"
+                FontSize="20"
+                Width="100"
+                HorizontalAlignment="Right"
+                Margin="0,0,10,10"
+                Foreground="#FFFF8C02"
+                Background="#FFFCFDFE"
+                Click="btnBackonClick"
+                
+                Grid.Column="1"
+                Grid.Row="1"
+                />
+        
+        <!-- odkaz na profil uživatele -->
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Right"
+                    
+                    Grid.Column="1"
+                    Grid.Row="0">
+            <Image  Width="75"
+                    Height="56"
+                    HorizontalAlignment="Right"
+                    Margin="10"
+                    />
+            <Label  x:Name="lUname"
+                    Content="Username"
+                    FontSize="12"
+                    Foreground="#FFFF8C02"
+                    FontWeight="Bold"
+                    />
+        </StackPanel>
+
+        <!-- Dva listboxy pro zobrazování kategorií a místností
+             Vždy viditelný pouze jeden ListBox-->
+        <!-- ListBox pro zobrazování kategorí-->
+        <ListBox    x:Name="lbCategory"
+                    Background="#FFFF8C02"
+                    Margin="10,0,10,10"
+                    
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="2" 
+                    SelectionChanged="LBConSelect">
+            <!-- ItemSource se bude nastavovat v programu-->
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock          Text="{Binding Path=Name}"
+                                            FontSize="20"
+                                            Foreground="Black"
+                                            Margin="5,10,0,10"
+                                            />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        
+        
+        <!-- ListBox pro zobrazování místností-->
+        <ListBox    x:Name="lbRoom"
+                    Background="#FFFF8C02"
+                    Margin="10,0,10,10"
+                    Visibility="Hidden"
+                    
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="2" 
+                    SelectionChanged="LBRonSelect">
+            <!-- ItemSource se bude nastavovat v programu-->
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock          Text="{Binding Path=Name}"
+                                            FontSize="20"
+                                            Foreground="Black"
+                                            Margin="5,10,0,10"
+                                            />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>
