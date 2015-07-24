@@ -14,3 +14,6 @@ D:\prg\C#\XChatCommunicator\XChatCommunicator\bin\Debug\HtmlAgilityPack.xml
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Main\MainWindow.baml
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Main\MainWindow.g.cs
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator_MarkupCompile.lref
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\styles.baml
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Login\LoginWindow.g.cs
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Login\LoginWindow.baml

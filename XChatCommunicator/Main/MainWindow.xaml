@@ -3,6 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:src="clr-namespace:XChatter.Main"
         Title="xChat" Height="800" Width="400">
+    
+    <Window.Resources>
+        <ResourceDictionary Source="/styles.xaml" />
+
+    </Window.Resources>
+    
     <Grid   Background="#FFFCFDFE">
         
         <!-- celý obsah okna na mřížce 2*3-->
@@ -38,13 +44,11 @@
         
         <!-- tlačítko zpět -->
         <Button x:Name="btnBack" 
+                Style="{StaticResource GenericButtonStyle}"
                 Content="Zpět"
-                FontSize="20"
                 Width="100"
                 HorizontalAlignment="Right"
                 Margin="0,0,10,10"
-                Foreground="#FFFF8C02"
-                Background="#FFFCFDFE"
                 Click="btnBackonClick"
                 
                 Grid.Column="1"

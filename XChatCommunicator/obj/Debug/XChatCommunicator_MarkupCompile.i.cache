@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 
-163766648
+31076849349
 
-13-161716055
+141428520017
 141704394639
-Main\MainWindow.xaml;
+Login\LoginWindow.xaml;Main\MainWindow.xaml;styles.xaml;
 
-True
+False
 

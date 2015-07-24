@@ -53,6 +53,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Login\LoginWindow.xaml.cs">
+      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Main\Link.cs" />
     <Compile Include="Main\Logger.cs" />
     <Compile Include="Main\MainWindow.xaml.cs">
@@ -60,7 +63,15 @@
     </Compile>
     <Compile Include="XChatCommunicator\XChatCommunicator.cs" />
     <Compile Include="Main\Main.cs" />
+    <Page Include="Login\LoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Main\MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -96,7 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Chat\" />
-    <Folder Include="Login\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
