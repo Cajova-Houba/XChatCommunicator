@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using XChatter.XchatCommunicator;
+using XChatter.XChatCommunicator;
 
 namespace XChatter.Main
 {
@@ -66,6 +66,16 @@ namespace XChatter.Main
         public Links getChatRoomCategories()
         {
             return xComm.getChatRoomCategories();
+        }
+
+        /// <summary>
+        /// Metoda se pokusí přihlásit se zadanými údaji. vrátí true pokud přihlášení proběhne úspěšně.
+        /// </summary>
+        public Boolean logIn(String login, String psw)
+        {
+            bool res = xComm.logIn(login, psw);
+
+            return res;
         }
     }
 }

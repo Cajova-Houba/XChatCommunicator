@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Web;
 using XChatter.Main;
+using XChatter.XChatCommunicator;
 
-namespace XChatter.XchatCommunicator
+namespace XChatter.XChatCommunicator
 {
     /// <summary>
     /// Třída slouží ke komunikaci s xchatem. Implementována podle návrhového vzoru jedináček.
@@ -62,9 +63,19 @@ namespace XChatter.XchatCommunicator
         /// </summary>
         /// <param name="name">Uživateské jméno</param>
         /// <param name="pass">Uživatelské heslo</param>
-        /// <returns>Session key. Tohle se nejspíš bude měnit, kvůli detekci chyb na nějakou přepravku.</returns>
-        public String logIn(String name, String pass)
+        /// <returns>Objekt třídy State. Dojde-li při komunikaci s XChatem k chybě, bude objekt obsahovat následující
+        ///             Ok = false
+        ///             Err = znění chyby
+        ///             Res = null
+        ///          Nedojde-li k chybě, bude objekt obsahovat následující
+        ///             Ok = true
+        ///             Err = ""
+        ///             Res = session key, typováno na string.
+        /// </returns>
+        public State logIn(String name, String pass)
         {
+            State res = new State();
+
             String sskey = "";
             //byte array s parametry url, js, name, pass, x, y
             //x, y můžou být 0, url nějaká url z xchatu, stačí /index.php a js=1
@@ -86,6 +97,8 @@ namespace XChatter.XchatCommunicator
                 //chyba při přihlášení, třeba zjišťovat v query
                 if(responseUri[1] == "login/")
                 {
+                    res.Ok = false;
+                    res.Err = "Chyba při přihlášení";
                     Console.WriteLine("Chyba");
                 }
 
@@ -94,11 +107,12 @@ namespace XChatter.XchatCommunicator
                 {
                     sskey = responseUri[1].Replace("/","");
                     logedIn = true;
+                    res.Res = sskey;
                 }
             }
             response.Close();
 
-            return sskey;
+            return res;
         }
 
         /// <summary>

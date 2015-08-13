@@ -61,6 +61,7 @@
     <Compile Include="Main\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="XChatCommunicator\State.cs" />
     <Compile Include="XChatCommunicator\XChatCommunicator.cs" />
     <Compile Include="Main\Main.cs" />
     <Page Include="Login\LoginWindow.xaml">
