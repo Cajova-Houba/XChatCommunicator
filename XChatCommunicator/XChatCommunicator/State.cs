@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace XChatter.XChatCommunicator
+namespace XChatter.XchatCommunicator
 {
     /// <summary>
     /// Třída představuje výsledek komunikace s Xchatem. Přenáší údaje o úspěchu komunikace,

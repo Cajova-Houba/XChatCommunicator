@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Web;
 using XChatter.Main;
-using XChatter.XChatCommunicator;
+using XChatter.XchatCommunicator;
 
-namespace XChatter.XChatCommunicator
+namespace XChatter.XchatCommunicator
 {
     /// <summary>
     /// Třída slouží ke komunikaci s xchatem. Implementována podle návrhového vzoru jedináček.
@@ -27,13 +27,22 @@ namespace XChatter.XChatCommunicator
         private const String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
         
         //veřejné konstanty
+        //přesná délka session key
         public const int SSKEY_LENGTH = 43;
 
-        //příznaky
-        private bool logedIn = true;
-
         //kódy xchat chyb
-        public const int BAD_PSW = 1;
+        public const int BAD_PSW_ERR = 1;
+
+        #region properties
+        public bool LogedIn { get; private set; }
+
+        //session key přihlášeného uživatele
+        public String SessionKey { private get; set; }
+
+        //username přihlášeného uživatele
+        public String Username { get; private set; }
+
+        #endregion
 
         private XChatCommunicator()
         {
@@ -49,13 +58,7 @@ namespace XChatter.XChatCommunicator
             return XChatCommunicator.instance;
         }
 
-        #region properties
-        public bool LogedIn { get { return logedIn; } }
-
-        //session key
-        public String SessionKey { private get; set; }
-
-        #endregion
+        
 
         /// <summary>
         /// Meto slouží k přihlášení do xchatu. Výsledkem je session key, přes který se dá přistupovat
@@ -97,8 +100,6 @@ namespace XChatter.XChatCommunicator
                 //chyba při přihlášení, třeba zjišťovat v query
                 if(responseUri[1] == "login/")
                 {
-                    res.Ok = false;
-                    res.Err = "Chyba při přihlášení";
                     Console.WriteLine("Chyba");
                 }
 
@@ -106,12 +107,13 @@ namespace XChatter.XChatCommunicator
                 else if (responseUri[1].Length == SSKEY_LENGTH+1 )
                 {
                     sskey = responseUri[1].Replace("/","");
-                    logedIn = true;
-                    res.Res = sskey;
+                    SessionKey = sskey;
+                    LogedIn = true;
                 }
             }
             response.Close();
 
+            res.Res = sskey;
             return res;
         }
 

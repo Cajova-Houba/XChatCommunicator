@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using XChatter.XChatCommunicator;
+using XChatter.XchatCommunicator;
 
 namespace XChatter.Main
 {
@@ -73,9 +73,17 @@ namespace XChatter.Main
         /// </summary>
         public Boolean logIn(String login, String psw)
         {
-            bool res = xComm.logIn(login, psw);
+            State res = xComm.logIn(login, psw);
 
-            return res;
+            //tady to bude chtít nějak ukládat info o případný chybě
+            if(res.Ok && ((string)res.Res).Length == XChatCommunicator.SSKEY_LENGTH)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

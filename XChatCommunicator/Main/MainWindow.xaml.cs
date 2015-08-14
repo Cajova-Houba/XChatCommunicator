@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using XChatter.Login;
 
 namespace XChatter.Main
 {
@@ -59,6 +61,9 @@ namespace XChatter.Main
             {
                 Logger.dbgOut("Nikdo nepřihlášen, spouštím přihlašovací okno.");
 
+                //spuštění vlákna pro login okno
+                startLoginWindow();
+
             }
 
             //vytvoření a přiřazení itemssource
@@ -69,6 +74,28 @@ namespace XChatter.Main
             lbRoom.ItemsSource = lbRoomCollection;
 
             naplnLB();
+        }
+
+        /// <summary>
+        /// Metoda slouží ke startu vlastního vlákna pro LoginWindow.
+        /// </summary>
+        private void startLoginWindow()
+        {
+            this.Hide();
+            Thread t = new Thread(() =>
+            {
+                LoginWindow lw = new LoginWindow(mainApp);
+                lw.Show();
+                lw.Closed += (sender, e) => lw.Dispatcher.InvokeShutdown();
+
+                System.Windows.Threading.Dispatcher.Run();
+            });
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+            t.Join();
+
+            this.Show();
         }
 
         /// <summary>
