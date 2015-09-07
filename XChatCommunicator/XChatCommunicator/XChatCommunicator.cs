@@ -108,6 +108,7 @@ namespace XChatter.XchatCommunicator
                 {
                     sskey = responseUri[1].Replace("/","");
                     SessionKey = sskey;
+                    Username = name;
                     LogedIn = true;
                 }
             }

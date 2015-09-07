@@ -64,7 +64,12 @@ namespace XChatter.Main
                 //spuštění vlákna pro login okno
                 startLoginWindow();
 
+                Logger.dbgOut("Přihlášení proběhlo, spouštím zpátky main window.");
             }
+
+            //nastavení username podle přihlášeného uživatele
+            //ještě to bude chtít nějak získat profilovou fotku
+            lUname.Content = mainApp.getUsername();
 
             //vytvoření a přiřazení itemssource
             lbCatCollection = new Links();

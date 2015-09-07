@@ -85,5 +85,21 @@ namespace XChatter.Main
                 return false;
             }
         }
+
+        /// <summary>
+        /// Metoda vrátí username právě přihlášeného uživatele. Pokud není nikdo přihlášen, vrátí
+        /// prázdný řetězec.
+        /// </summary>
+        public String getUsername()
+        {
+            if(xComm.LogedIn)
+            {
+                return xComm.Username;
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 }
