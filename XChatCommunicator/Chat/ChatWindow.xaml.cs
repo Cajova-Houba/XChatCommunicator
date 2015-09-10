@@ -26,9 +26,11 @@ namespace XChatter.Chat
 
         public ChatWindow(MainWindow parrent, string roomName)
         {
+            InitializeComponent();
+
+            DataContext = this;  //aby šel bindovat title okna
             RoomName = roomName;
             Parrent = parrent;
-            InitializeComponent();
         }
     }
 }
