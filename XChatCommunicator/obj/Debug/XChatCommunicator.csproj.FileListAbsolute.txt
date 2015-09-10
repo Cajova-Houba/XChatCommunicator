@@ -17,3 +17,5 @@ D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\XChatCommunicator_Markup
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\styles.baml
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Login\LoginWindow.g.cs
 D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Login\LoginWindow.baml
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Chat\ChatWindow.baml
+D:\prg\C#\XChatCommunicator\XChatCommunicator\obj\Debug\Chat\ChatWindow.g.cs

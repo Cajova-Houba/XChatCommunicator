@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using XChatter.Main;
 
 namespace XChatter.Chat
 {
@@ -19,8 +20,14 @@ namespace XChatter.Chat
     /// </summary>
     public partial class ChatWindow : Window
     {
-        public ChatWindow()
+        public string RoomName { private set; get; }
+
+        public MainWindow Parrent { private set; get; }
+
+        public ChatWindow(MainWindow parrent, string roomName)
         {
+            RoomName = roomName;
+            Parrent = parrent;
             InitializeComponent();
         }
     }

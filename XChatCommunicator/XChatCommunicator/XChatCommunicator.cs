@@ -46,7 +46,7 @@ namespace XChatter.XchatCommunicator
 
         private XChatCommunicator()
         {
-            SessionKey = "~$12385083~131578bef0021b4cb161e9afbb2fc66a";
+            LogedIn = false; //pro testování
         }
 
         /// <summary>

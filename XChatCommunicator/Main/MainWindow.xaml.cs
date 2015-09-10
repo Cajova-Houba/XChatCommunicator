@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using XChatter.Chat;
 using XChatter.Login;
 
 namespace XChatter.Main
@@ -117,6 +118,28 @@ namespace XChatter.Main
         }
 
         /// <summary>
+        /// Metoda vytvoří a otevře nové okno pro zadanou chatovací místnost.
+        /// Nové okno poběží v samostaném vlákně.
+        /// </summary>
+        /// <param name="roomName">Jméno místnosti - zatím, v budoucnu se nejspíš bude předávat víc parametrů.</param>
+        private void openChatRoom(string roomName)
+        {
+            Thread t = new Thread(() =>
+            {
+                ChatWindow chw = new ChatWindow(this, roomName);
+                chw.Show();
+                chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
+
+                System.Windows.Threading.Dispatcher.Run();
+            });
+
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
+        }
+
+        #region reakce na udalosti
+
+        /// <summary>
         /// Reakce na událost výběru prvku z listboxu, který zobrazuje kategorie místností.
         /// Typicky se jedná o kliknutí na kategorii místnosti => zviditelnit druhý listbox.
         /// </summary>
@@ -148,8 +171,11 @@ namespace XChatter.Main
         private void LBRonSelect(Object sender, EventArgs e)
         {
             if (lbRoom.Visibility == System.Windows.Visibility.Hidden) { return; }
-            String name = ((RoomLink)lbRoom.SelectedItem).Name;
-            Logger.dbgOut("Klik na místnost: " + name);
+            String roomName = ((RoomLink)lbRoom.SelectedItem).Name;
+            Logger.dbgOut("Klik na místnost: " + roomName);
+
+            //testovací vytvoření nové místnosti
+            openChatRoom(roomName);
         }
 
         /// <summary>
@@ -164,6 +190,8 @@ namespace XChatter.Main
             lbCategory.Visibility = System.Windows.Visibility.Visible;
             lbRoom.Visibility = System.Windows.Visibility.Hidden;
         }
+
+        #endregion
     }
 }
 
