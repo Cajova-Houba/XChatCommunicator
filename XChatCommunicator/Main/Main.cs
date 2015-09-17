@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using XChatter.XchatCommunicator;
+using System.IO;
 
 namespace XChatter.Main
 {
@@ -67,6 +69,33 @@ namespace XChatter.Main
         {
             return xComm.getChatRoomCategories();
         }
+        
+        /// <summary>
+        /// Metoda vrátí username právě přihlášeného uživatele. Pokud není nikdo přihlášen, vrátí
+        /// prázdný řetězec.
+        /// </summary>
+        public String getUsername()
+        {
+            if(xComm.LogedIn)
+            {
+                return xComm.Username;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// Metoda získá uživatelovu profilovou fotku.
+        /// </summary>
+        /// <returns></returns>
+        public Stream getProfilePhotoPreviewStream()
+        {
+            State res = xComm.getProfilePhotoPreviewStream();
+
+            return (Stream)(res.Res);
+        }
 
         /// <summary>
         /// Metoda se pokusí přihlásit se zadanými údaji. vrátí true pokud přihlášení proběhne úspěšně.
@@ -86,20 +115,5 @@ namespace XChatter.Main
             }
         }
 
-        /// <summary>
-        /// Metoda vrátí username právě přihlášeného uživatele. Pokud není nikdo přihlášen, vrátí
-        /// prázdný řetězec.
-        /// </summary>
-        public String getUsername()
-        {
-            if(xComm.LogedIn)
-            {
-                return xComm.Username;
-            }
-            else
-            {
-                return "";
-            }
-        }
     }
 }

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using XChatter.Main;
+using XChatter.XchatCommunicator;
 
 namespace XChatter.Chat
 {
@@ -24,6 +25,11 @@ namespace XChatter.Chat
 
         public MainWindow Parrent { private set; get; }
 
+        /// <summary>
+        /// GUI je od aplikační logiky odděleno, metody pro komunikaci s chatem můžou být psány sem.
+        /// </summary>
+        private XChatCommunicator xComm { set; get; }
+
         public ChatWindow(MainWindow parrent, string roomName)
         {
             InitializeComponent();
@@ -31,6 +37,7 @@ namespace XChatter.Chat
             DataContext = this;  //aby šel bindovat title okna
             RoomName = roomName;
             Parrent = parrent;
+            xComm = XChatCommunicator.getCommunicator();
         }
     }
 }

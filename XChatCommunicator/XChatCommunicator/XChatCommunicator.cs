@@ -7,8 +7,8 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Web;
+using System.Drawing;
 using XChatter.Main;
 using XChatter.XchatCommunicator;
 
@@ -237,6 +237,58 @@ namespace XChatter.XchatCommunicator
 
             return chatRooms;
             
+        }
+
+        /// <summary>
+        /// Metoda získá náhled profilové fotky uživatele. Pokud není nikdo přihlášený, vrátí null.
+        /// </summary>
+        /// <returns>Objekt třídy State. Dojde-li při komunikaci s XChatem k chybě, bude objekt obsahovat následující
+        ///             Ok = false
+        ///             Err = znění chyby
+        ///             Res = null
+        ///          Nedojde-li k chybě, bude objekt obsahovat následující
+        ///             Ok = true
+        ///             Err = ""
+        ///             Res = Stream dat s imagem. Pokud není nikdo přihlášený, null.
+        /// </returns>
+        public State getProfilePhotoPreviewStream()
+        {
+            State res = new State();
+            if (LogedIn)
+            {
+                //vytvoření requestu na xchat.centrum.cz/SSK/index.php
+                String uri = "http://xchat.centrum.cz/"+SessionKey+"/index.php";
+                HtmlDocument page= new HtmlDocument();
+
+                //načtení stránky
+                WebClient wc = new WebClient();
+                String htmlString = wc.DownloadString(uri);
+                page.LoadHtml(htmlString);
+
+                //parsování
+                //vybrat <div id="hlavicka"> -> <span class="float2"> -> <img src="tohleto">
+
+                HtmlNode img = page.DocumentNode.SelectSingleNode("//div[contains(@id,'hlavicka')]")
+                               .SelectSingleNode(".//span[contains(@class,'float2')]")
+                               .SelectSingleNode(".//img");
+
+                //url obrázku
+                String imgSrc = img.Attributes["src"].Value;
+
+                //načtení streamu dat
+                var req = WebRequest.Create(imgSrc);
+                var resp = req.GetResponse();
+                res.Res = resp.GetResponseStream();
+
+                return res;
+            }
+
+
+            //pokud neni nikdo prhlaseny vrati null
+            else
+            {
+                return res;
+            }
         }
 
         #region private metody

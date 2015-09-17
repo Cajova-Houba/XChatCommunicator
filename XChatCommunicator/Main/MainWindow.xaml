@@ -61,7 +61,8 @@
                     
                     Grid.Column="1"
                     Grid.Row="0">
-            <Image  Width="75"
+            <Image  x:Name="iPFPreview"
+                    Width="75"
                     Height="56"
                     HorizontalAlignment="Right"
                     Margin="10"

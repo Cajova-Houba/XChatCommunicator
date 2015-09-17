@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Drawing;
 using XChatter.Chat;
 using XChatter.Login;
 
@@ -67,6 +68,14 @@ namespace XChatter.Main
 
                 Logger.dbgOut("Přihlášení proběhlo, spouštím zpátky main window.");
             }
+
+            //načtení profilové fotky
+            BitmapImage photo = new BitmapImage();
+            photo.BeginInit();
+            photo.StreamSource = mainApp.getProfilePhotoPreviewStream();
+            photo.CacheOption = BitmapCacheOption.OnLoad;
+            photo.EndInit();
+            iPFPreview.Source = photo;
 
             //nastavení username podle přihlášeného uživatele
             //ještě to bude chtít nějak získat profilovou fotku
