@@ -70,12 +70,21 @@ namespace XChatter.Main
             }
 
             //načtení profilové fotky
+            Logger.dbgOut("Načítám profilovou fotku.");
             BitmapImage photo = new BitmapImage();
             photo.BeginInit();
             photo.StreamSource = mainApp.getProfilePhotoPreviewStream();
             photo.CacheOption = BitmapCacheOption.OnLoad;
             photo.EndInit();
-            iPFPreview.Source = photo;
+            photo.DownloadCompleted += (object sender, EventArgs e) =>
+            {
+                Logger.dbgOut("Profilová fotka načtena.");
+                Logger.dbgOut("Rozměr profilové fotky: " + photo.Width + "x" + photo.Height);
+                iPFPreview.Source = photo;
+                iPFPreview.Width = photo.Width;
+                iPFPreview.Height = photo.Height;
+
+            };
 
             //nastavení username podle přihlášeného uživatele
             //ještě to bude chtít nějak získat profilovou fotku
