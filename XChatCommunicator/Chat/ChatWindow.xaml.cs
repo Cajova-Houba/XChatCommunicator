@@ -23,11 +23,11 @@ namespace XChatter.Chat
     {
         public string RoomName { private set; get; }
 
-        public MainWindow Parrent { private set; get; }
+        public Chat Parrent { private set; get; }
 
         public RoomLink Link { private set; get; }
 
-        public ChatWindow(MainWindow parrent, RoomLink link)
+        public ChatWindow(Chat parrent, RoomLink link)
         {
             InitializeComponent();
 
