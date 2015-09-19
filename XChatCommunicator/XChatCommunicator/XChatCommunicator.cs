@@ -438,7 +438,31 @@ namespace XChatter.XchatCommunicator
                 type = Message.SYSTEM_MESSAGE;
                 time = row.Substring(35, 8);
                 user = "";
-                msg = "Systémová zpráva";
+
+                //ve wpf lze použít něco na způsob html tagů => nahradím <b class..></b> <Bold></Bold>
+                //dále je třeba nahradit "&quot;" uvozovkama
+                //smazat </font><br />\n na konci řádku
+                row = row.Replace("&quot;", "\"").Replace("</font><br />\n","").Replace("</b>","").Replace("</a>","");
+
+                //pomocí regexu najdu tag <b class=...>
+                //tag b nemusí mít vždycky třídu, někdy je jen <b>
+                Regex bold = new Regex("<b( class=\"[a-zA-Z\\d\\s]*\")?>");
+                Match m = bold.Match(row);
+                if (m.Success)
+                {
+                    row = row.Replace(m.Groups[0].ToString(), "");
+                }
+
+                //to stejný udělám i s odkazem
+                Regex a = new Regex("<a href=\"[a-zA-Z\\d\\s:\\-/.]*\">");
+                m = a.Match(row);
+                if (m.Success)
+                {
+                    row.Replace(m.Groups[0].ToString(), "");
+                }
+
+                //nevim proč se tam znak ľ objevuje místo ž
+                msg = row.Substring(87).Replace("ľ","ž");
 
             }
             else
