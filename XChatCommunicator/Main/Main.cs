@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using XChatter.XchatCommunicator;
 using System.IO;
+using XChatter.Chat;
 
 namespace XChatter.Main
 {
@@ -28,7 +29,7 @@ namespace XChatter.Main
         /// <summary>
         /// Instance chatovacích místností.
         /// </summary>
-
+        private List<Chat.Chat> rooms;
 
         public MainApp()
         {
@@ -38,6 +39,10 @@ namespace XChatter.Main
             //nová instance XChatCommunicatoru
             xComm = XChatCommunicator.getCommunicator();
             Logger.dbgOut("Instance XCommunicatoru načtena.");
+
+            //vytvoření seznamu místností
+            rooms = new List<Chat.Chat>();
+            Logger.dbgOut("Seznam místností inicializován.");
 
             //hlavní okno aplikace
             Logger.dbgOut("Spouštím halvní okno aplikace");
@@ -118,6 +123,17 @@ namespace XChatter.Main
             {
                 return false;
             }
+        }
+
+
+        /// <summary>
+        /// Metoda slouží k vytvoření nové chatovací místnosti.
+        /// </summary>
+        public void newRoom(RoomLink link)
+        {
+            Logger.dbgOut("Otevírám místnost " + link.Name+".");
+            rooms.Add(new Chat.Chat(link));
+            Logger.dbgOut("Počet otevřených místností: " + rooms.Count+".");
         }
 
     }

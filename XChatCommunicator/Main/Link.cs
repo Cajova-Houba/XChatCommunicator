@@ -48,9 +48,15 @@ namespace XChatter.Main
         /// </summary>
         public String Info { get; set; }
 
-        public RoomLink(string name, string link, string info) : base(name,link)
+        /// <summary>
+        /// Room ID.
+        /// </summary>
+        public String RID { get; set; }
+
+        public RoomLink(string name, string link, string info, string rid) : base(name,link)
         {
             Info = info;
+            RID = rid;
         }
     }
 

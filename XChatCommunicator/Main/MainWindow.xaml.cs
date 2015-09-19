@@ -145,17 +145,7 @@ namespace XChatter.Main
         /// <param name="roomName">Jméno místnosti - zatím, v budoucnu se nejspíš bude předávat víc parametrů.</param>
         private void openChatRoom(RoomLink link)
         {
-            Thread t = new Thread(() =>
-            {
-                ChatWindow chw = new ChatWindow(this, link);
-                chw.Show();
-                chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
-
-                System.Windows.Threading.Dispatcher.Run();
-            });
-
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
+            mainApp.newRoom(link);
         }
 
         #region reakce na udalosti

@@ -41,7 +41,27 @@
                    Margin="10,10,10,10"
                    
                    Grid.Row="0">
-            
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        
+                        <TextBlock  Text="{Binding Path=Time}"
+                                    Foreground="Black"
+                                    Margin="0,0,5,0"
+                                    />
+                        
+                        <TextBlock  Text="{Binding Path=Username}"
+                                    Foreground="Black"
+                                    FontWeight="Bold"
+                                    Margin="0,0,5,0"
+                                    />
+                        
+                        <TextBlock  Text="{Binding Path=Msg}"
+                                    Foreground="Black"
+                                    />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
         
         <!-- plocha s textboxem pro psaní 

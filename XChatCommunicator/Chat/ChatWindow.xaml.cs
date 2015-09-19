@@ -27,6 +27,8 @@ namespace XChatter.Chat
 
         public RoomLink Link { private set; get; }
 
+        private List<Message> Messages { set; get; }
+
         public ChatWindow(Chat parrent, RoomLink link)
         {
             InitializeComponent();
@@ -34,6 +36,9 @@ namespace XChatter.Chat
             DataContext = this;  //aby šel bindovat title okna
             Parrent = parrent;
             Link = link;
+
+            Messages = parrent.getMessages();
+            lbChatView.ItemsSource = Messages;
         }
     }
 }

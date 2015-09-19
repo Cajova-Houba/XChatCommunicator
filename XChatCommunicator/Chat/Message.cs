@@ -11,6 +11,9 @@ namespace XChatter.Chat
     /// </summary>
     public class Message
     {
+        //typy zpráv
+        public const int SYSTEM_MESSAGE = 0, USER_MESSAGE = 1;
+
         public string Username { private set; get; }
 
         /// <summary>
@@ -18,13 +21,26 @@ namespace XChatter.Chat
         /// </summary>
         public string Msg { private set; get; }
 
-        public DateTime Time { private set; get; }
+        public string Time { private set; get; }
 
-        public Message(string user, string msg, DateTime time)
+        /// <summary>
+        /// Typ zprávy - systémová, uživatel...
+        /// Zatím jsou jen dvě možnosti, ale necham to typovaný na číslo, kdyby bylo potřeba.
+        /// Měly by se používat konstanty z týhle třídy.
+        /// </summary>
+        public int Type { private set; get; }
+
+        public Message(string user, string msg, string time, int type)
         {
             Username = user;
             Msg = msg;
             Time = time;
+            Type = type;
+        }
+
+        public override string ToString()
+        {
+            return Time + " " + Username + " " + Msg; ;
         }
     }
 }

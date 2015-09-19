@@ -22,6 +22,7 @@ namespace XChatter.Chat
         public Chat(RoomLink roomLink)
         {
             Link = roomLink;
+            xComm = XChatCommunicator.getCommunicator();
             openChatRoom();
         }
 
@@ -30,17 +31,19 @@ namespace XChatter.Chat
         /// </summary>
         private void openChatRoom()
         {
-            Thread t = new Thread(() =>
-            {
-                ChatWindow chw = new ChatWindow(this, Link);
-                chw.Show();
-                chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
+            ChatWindow chw = new ChatWindow(this, Link);
+            chw.Show();
+            //Thread t = new Thread(() =>
+            //{
+            //    ChatWindow chw = new ChatWindow(this, Link);
+            //    chw.Show();
+            //    chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
 
-                System.Windows.Threading.Dispatcher.Run();
-            });
+            //    System.Windows.Threading.Dispatcher.Run();
+            //});
 
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start();
+            //t.SetApartmentState(ApartmentState.STA);
+            //t.Start();
         }
 
         /// <summary>
@@ -49,8 +52,7 @@ namespace XChatter.Chat
         /// <returns></returns>
         public List<Message> getMessages()
         {
-
-            return null;
+            return (List<Message>)xComm.getMessages(Link.RID).Res;
         }
     }
 }

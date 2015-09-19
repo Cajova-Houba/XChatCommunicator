@@ -11,6 +11,8 @@ using System.Web;
 using System.Drawing;
 using XChatter.Main;
 using XChatter.XchatCommunicator;
+using System.Text.RegularExpressions;
+using XChatter.Chat;
 
 namespace XChatter.XchatCommunicator
 {
@@ -173,6 +175,7 @@ namespace XChatter.XchatCommunicator
 
         /// <summary>
         /// Metoda slouží pro získání seznamu místností v kategorii, která je zadná linkem.
+        /// Odkaz na místnost je ve formátu /modchat?op=mainframeset&rid=*******&js=0&nonjs=1
         /// </summary>
         /// <param name="link">Link z kategorie</param>
         /// <returns>Seznam položek ve tvaru [název,link]</returns>
@@ -200,6 +203,17 @@ namespace XChatter.XchatCommunicator
             HtmlNodeCollection tds = page.DocumentNode.SelectNodes("//tr");
             bool first = true;  //kvůli detekci prvního prvku, trochu prasárna
 
+            /*
+             * Přímej link na místnost má tvar 
+             * http://xchat.centrum.cz/ssk/modchat/room/nazev-mistnosti
+             * 
+             * nazev-mistnosti je skutečnej název místnosti, bez diakritiky, s pomlčkama místo mezer.
+             * Neni tedy nutný parsovat odkazy, stačí pouze získat jména místností a ty přeformátovat.
+             * 
+             * Pokud chce uživatel domístnosti vstoupit poprvé, je odkázán na intro stránku, kde musí souhlasit s podmínkama.
+             * To se dá přeskočit, když odešlu POST packet s disclaim=on. Budu muset použít předchozí verzi a vrátit se rid. 
+             */
+
             foreach (HtmlNode node in tds)
             {
                 //první tr je hlavička tabulky => ignorovat
@@ -213,13 +227,23 @@ namespace XChatter.XchatCommunicator
                     HtmlNode linkNameNode = node.SelectSingleNode(".//td[contains(@id,'c2')]").SelectSingleNode(".//a[contains(@href,'" + XCHAT_URI + "/" + SessionKey + "/room" + "')]");
                     HtmlNode infoNode = node.SelectSingleNode("//td[contains(@id,'c3')]");
 
-                    //link - je nutné vyparsovat rid a cid
-                    Uri chatRoomLink = new Uri(linkNameNode.Attributes["href"].Value);
-                    String roomLink = "rid=" + HttpUtility.ParseQueryString(chatRoomLink.Query).Get("rid") +
-                                      "&cid=" + HttpUtility.ParseQueryString(chatRoomLink.Query).Get("cid");
-                    
+                    //rid pres regex "rid=(\d{7})"
+                    String url = linkNameNode.GetAttributeValue("href", "nic").ToString();
+                    Regex reg = new Regex("rid=(\\d{7})");
+                    Match rid = reg.Match(url);
+
                     //name
                     String name = linkNameNode.InnerText;
+
+                    //link name - zde se skutecne jmeno mistnosti preformatuje na jmeno mistnosti do odkazu
+                    String linkName = name.ToLower().Replace(' ', '-');
+                    //odstranění diakritiky
+                    char[] diakritika = new char[] { 'á', 'č', 'ď', 'ě', 'é', 'í', 'ó', 'ř', 'š', 'ú', 'ů', 'ý', 'ž' };
+                    char[] normalne = new char[] { 'a', 'c', 'd', 'e', 'e', 'i', 'o', 'r', 's', 'u', 'u', 'y', 'z' };
+                    for(int i=0;i<diakritika.Length;i++)
+                    {
+                        linkName = linkName.Replace(diakritika[i], normalne[i]);
+                    }
 
                     //info
                     String info = infoNode.InnerText;
@@ -227,7 +251,7 @@ namespace XChatter.XchatCommunicator
                     info = info.Substring(0, info.Length - 6);
 
                     //info o místnosti zatím nepoužito
-                    chatRooms.Add(new RoomLink(name,link,info));
+                    chatRooms.Add(new RoomLink(name, "/modchat?op=mainframeset&"+rid.Value.ToString()+"&js=0&nonjs=1", info, rid.Value.ToString()));
                 }
                 else
                 {
@@ -291,6 +315,66 @@ namespace XChatter.XchatCommunicator
             }
         }
 
+        /// <summary>
+        /// Metoda získá zprávy pro zadanou místnost.
+        /// </summary>
+        /// <param name="link">Link místnosti. </param>
+        /// <returns>Objekt třídy State. Dojde-li při komunikaci s XChatem k chybě, bude objekt obsahovat následující
+        ///             Ok = false
+        ///             Err = znění chyby
+        ///             Res = null
+        ///          Nedojde-li k chybě, bude objekt obsahovat následující
+        ///             Ok = true
+        ///             Err = ""
+        ///             Res = List typovaný na Message.
+        /// </returns>
+        public State getMessages(string rid)
+        {
+            State res = new State();
+
+            //url ktera vede primo na frame se zpravama
+            //http://xchat.centrum.cz/ssk/modchat?op=roomtopng&rid=4030012&js=0
+            String roomUri = "http://xchat.centrum.cz/" + SessionKey + "/modchat?op=roomtopng&"+rid+"&js=0";
+
+            HtmlDocument page = new HtmlDocument();
+            page.LoadHtml(getHtmlString(roomUri));
+
+            /*zprávy ve framu jsou v elementu body a mají následující formát
+             *  20:09:34 <font color="#150e97"><span class="umsg_room"><b>Merchant:</b> ahoj, mi se ještě neznáme. Já jsem Merchant </span></font><br />\n
+                20:09:11 <font color="#000000"><span class="umsg_room"><b>Steward:</b> Ahoj</span></font><br />\n
+                <font size="-2" class="systemtime">20:08:54 </font><font size="-2" class="systemtext">&quot;Uživatelka <b class="system in 10-0">Steward</b> vstoupila do místnosti&quot;</font><br />\n
+                <font size="-2" class="systemtime">20:07:03 </font><font size="-2" class="systemtext">&quot;Uživatel <b class="system out">risa99</b> opustil  místnost&quot;</font><br />\n
+             * 
+             * nejlehčí asi bude použít split('\n') a z jednotlivejch řádků pak vyparsovat potřebný věci
+             * 
+             * když je první znak na řádce číslo, je to obyčejná zpráva od uživatele, s výjimkou prvního řádku - tam jsou před správou dva tagy font
+             * řekněme, že ten kód se skoro určitě nebude měnit, takže prvních 86 znaků na prvním řádku můžu vynechat.
+             * 
+             * když řádek začíná tagem font s class=systemtime, jedná se systémovou zprávu (kdo přišel/odešel z místnosti atp)
+            */
+
+            String[] rows = page.DocumentNode.SelectSingleNode("//body").InnerHtml.Split('\n');
+
+            if (rows.Length > 0)
+            {
+                rows[0] = rows[0].Substring(81);
+
+                List<Message> msgs = new List<Message>();
+
+                foreach (string row in rows)
+                {
+                    //kdyby se tam připletly nějaký blbosti
+                    if (row.Length < 8) { continue; }
+                    Message msg = parseMessage(row);
+                    if (msg != null) { msgs.Add(msg); }
+                }
+
+                res.Res = msgs;
+            }
+
+            return res;
+        }
+
         #region private metody
 
         /// <summary>
@@ -313,6 +397,67 @@ namespace XChatter.XchatCommunicator
             stream.Close();
 
             return request;
+        }
+
+        /// <summary>
+        /// Metoda stáhne html zadané stránky a vrátí jej.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        private String getHtmlString(String uri)
+        {
+            WebClient wc = new WebClient();
+            return wc.DownloadString(uri);
+        }
+
+        /// <summary>
+        /// Metoda rozparsuje zadaný řádek a sestaví z něj Message, kterou vrátí. Pokud dojde k chybě, vrátí null.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        private Message parseMessage(String row)
+        {
+            /*
+             * příklady řádků se zprávami
+             * 20:09:34 <font color="#150e97"><span class="umsg_room"><b>Merchant:</b> ahoj, mi se ještě neznáme. Já jsem Merchant </span></font><br />\n
+                20:09:11 <font color="#000000"><span class="umsg_room"><b>Steward:</b> Ahoj</span></font><br />\n
+                <font size="-2" class="systemtime">20:08:54 </font><font size="-2" class="systemtext">&quot;Uživatelka <b class="system in 10-0">Steward</b> vstoupila do místnosti&quot;</font><br />\n
+                <font size="-2" class="systemtime">20:07:03 </font><font size="-2" class="systemtext">&quot;Uživatel <b class="system out">risa99</b> opustil  místnost&quot;</font><br />\n
+             */
+
+            int type;
+            string time;
+            string msg;
+            string user;
+
+            //parsování podle typu zprávy
+            if (row[0] == '<')
+            {
+                if (row.Length < 43) { return null; }
+
+                type = Message.SYSTEM_MESSAGE;
+                time = row.Substring(35, 8);
+                user = "";
+                msg = "Systémová zpráva";
+
+            }
+            else
+            {
+                type = Message.USER_MESSAGE;
+                time = row.Substring(0, 8);
+
+                //regexp na jmeno
+                //jméno je mezi <b> a </b>
+                Regex jmeno = new Regex("<b>(?<uname>[0-9a-zA-Z.-_]*)</b>");
+                user = jmeno.Match(row).Groups["uname"].ToString();
+
+                //regexp na zprávu
+                //zpráva je mezi </b> a </span>
+                Regex zprava = new Regex("</b>(?<msg>.*)</span>");
+                msg = zprava.Match(row).Groups["msg"].ToString();
+            }
+
+            return new Message(user, msg, time, type);
         }
 
         #endregion
