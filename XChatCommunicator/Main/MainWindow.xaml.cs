@@ -76,6 +76,9 @@ namespace XChatter.Main
             photo.StreamSource = mainApp.getProfilePhotoPreviewStream();
             photo.CacheOption = BitmapCacheOption.OnLoad;
             photo.EndInit();
+
+            //fotka se jako source nastaví až po uplném stažení, to je kvůli nastavení správné
+            //velikosti
             photo.DownloadCompleted += (object sender, EventArgs e) =>
             {
                 Logger.dbgOut("Profilová fotka načtena.");
@@ -140,11 +143,11 @@ namespace XChatter.Main
         /// Nové okno poběží v samostaném vlákně.
         /// </summary>
         /// <param name="roomName">Jméno místnosti - zatím, v budoucnu se nejspíš bude předávat víc parametrů.</param>
-        private void openChatRoom(string roomName)
+        private void openChatRoom(RoomLink link)
         {
             Thread t = new Thread(() =>
             {
-                ChatWindow chw = new ChatWindow(this, roomName);
+                ChatWindow chw = new ChatWindow(this, link);
                 chw.Show();
                 chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
 
@@ -189,11 +192,11 @@ namespace XChatter.Main
         private void LBRonSelect(Object sender, EventArgs e)
         {
             if (lbRoom.Visibility == System.Windows.Visibility.Hidden) { return; }
-            String roomName = ((RoomLink)lbRoom.SelectedItem).Name;
-            Logger.dbgOut("Klik na místnost: " + roomName);
+            RoomLink link = (RoomLink)lbRoom.SelectedItem;
+            Logger.dbgOut("Klik na místnost: " + link.Name);
 
             //testovací vytvoření nové místnosti
-            openChatRoom(roomName);
+            openChatRoom(link);
         }
 
         /// <summary>
