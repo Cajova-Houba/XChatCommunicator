@@ -25,6 +25,11 @@ namespace XChatter.Main
         /// </summary>
         private XChatCommunicator xComm;
 
+        /// <summary>
+        /// Instance chatovacích místností.
+        /// </summary>
+
+
         public MainApp()
         {
             //start aplikace

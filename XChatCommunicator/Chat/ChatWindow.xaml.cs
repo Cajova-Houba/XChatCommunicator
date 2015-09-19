@@ -27,11 +27,6 @@ namespace XChatter.Chat
 
         public RoomLink Link { private set; get; }
 
-        /// <summary>
-        /// GUI je od aplikační logiky odděleno, metody pro komunikaci s chatem můžou být psány sem.
-        /// </summary>
-        private XChatCommunicator xComm { set; get; }
-
         public ChatWindow(MainWindow parrent, RoomLink link)
         {
             InitializeComponent();
@@ -39,7 +34,6 @@ namespace XChatter.Chat
             DataContext = this;  //aby šel bindovat title okna
             Parrent = parrent;
             Link = link;
-            xComm = XChatCommunicator.getCommunicator();
         }
     }
 }
