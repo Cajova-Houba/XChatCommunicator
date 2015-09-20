@@ -87,12 +87,12 @@ namespace XChatter.XchatCommunicator
             string httpContent = "url=" + XCHAT_URI + "/index.php&js=1&x=0&y=0&name=" + name + "&pass=" + pass;
             httpContent.Replace(":", "%3A");
             httpContent.Replace("/", "%2F");
-            HttpWebRequest request = makeRequest(XCHAT_URI + "/login/",httpContent);
+            HttpWebRequest request = makeRequest(XCHAT_URI + "/login/",httpContent,"POST");
 
             //jako odpoveď přijde http packet, kterej bude obsahovat url s chybou/ssklíčem
             //v response je tato url rozdělena na segmenty -> z těchto segmentů získat potřebné věci
             WebResponse response = request.GetResponse();
-            Console.WriteLine(((HttpWebResponse)response).StatusDescription);
+            Logger.dbgOut(((HttpWebResponse)response).StatusDescription);
 
             //když nebude login úspěšný, v response.responseuri.segments[1] bude "login/", a v query bude "...err=kod_chyby..."
             //jinak je v segments[1] sskey+"/"
@@ -229,7 +229,7 @@ namespace XChatter.XchatCommunicator
 
                     //rid pres regex "rid=(\d{7})"
                     String url = linkNameNode.GetAttributeValue("href", "nic").ToString();
-                    Regex reg = new Regex("rid=(\\d{7})");
+                    Regex reg = new Regex("(?<rid>rid=[\\d]*)&");
                     Match rid = reg.Match(url);
 
                     //name
@@ -251,7 +251,7 @@ namespace XChatter.XchatCommunicator
                     info = info.Substring(0, info.Length - 6);
 
                     //info o místnosti zatím nepoužito
-                    chatRooms.Add(new RoomLink(name, "/modchat?op=mainframeset&"+rid.Value.ToString()+"&js=0&nonjs=1", info, rid.Value.ToString()));
+                    chatRooms.Add(new RoomLink(name, "/modchat?op=mainframeset&"+rid.Value.ToString()+"&js=0&nonjs=1", info, rid.Groups["rid"].ToString()));
                 }
                 else
                 {
@@ -318,7 +318,7 @@ namespace XChatter.XchatCommunicator
         /// <summary>
         /// Metoda získá zprávy pro zadanou místnost.
         /// </summary>
-        /// <param name="link">Link místnosti. </param>
+        /// <param name="rid">Room ID</param>
         /// <returns>Objekt třídy State. Dojde-li při komunikaci s XChatem k chybě, bude objekt obsahovat následující
         ///             Ok = false
         ///             Err = znění chyby
@@ -375,6 +375,49 @@ namespace XChatter.XchatCommunicator
             return res;
         }
 
+        /// <summary>
+        /// Metoda vstoupí do zadané místnosti. Vstup v tomto případe znamená, že metoda odešle na introstránku místnosti
+        /// souhlas s podmínkami.
+        /// </summary>
+        /// <param name="rid">Room ID</param>
+        /// <returns>Objekt třídy State. Dojde-li při komunikaci s XChatem k chybě, bude objekt obsahovat následující
+        ///             Ok = false
+        ///             Err = znění chyby
+        ///             Res = null
+        ///          Nedojde-li k chybě, bude objekt obsahovat následující
+        ///             Ok = true
+        ///             Err = ""
+        ///             Res = True v případě, že se vstup podaří (=> přesměrování na stránku s místností), False v případě, že se nepodaří.
+        /// </returns>
+        public State enterRoom(string rid)
+        {
+            State res = new State();
+
+            //link na introstránku je
+            //http://xchat.centrum.cz/ssk/room/intro.php?rid=*******
+            String introUrl = "http://xchat.centrum.cz/" + SessionKey + "/room/intro.php?" + rid;
+
+            //je nutné odeslat POST packet s hodnotami
+            //_btn_enter=wanna_enter_man?
+            //btn_enter=Vstoupit do místnosti
+            //disclaim=on
+            //sexwarn=1  - kvůli erotickým místnostem
+            string httpContent = "_btn_enter=wanna_enter_man?&btn_enter=Vstoupit do mistnosti&disclaim=on&sexwarn=1";
+
+            HttpWebRequest req = makeRequest(introUrl, httpContent,"POST");
+
+            //pokud vše proběhne v pořádku, bude v response.Responseuri odkaz http://xchat.centrum.cz/ssk/modchat/room/nazev-mistnosti
+            WebResponse response = req.GetResponse();
+
+            Logger.dbgOut("Response URI: " + response.ResponseUri);
+
+            Stream dataStream = response.GetResponseStream();
+            StreamReader sr = new StreamReader(dataStream);
+            string responseData = sr.ReadToEnd();
+            
+            return res;
+        }
+
         #region private metody
 
         /// <summary>
@@ -382,19 +425,23 @@ namespace XChatter.XchatCommunicator
         /// </summary>
         /// <param name="uri">URL na které bude request směřován</param>
         /// <param name="obsah">Obsah requestu</param>
+        /// <param name="method">POST nebo GET</param>
         /// <returns>Vytvořená HttpWebRequest</returns>
-        private HttpWebRequest makeRequest(String uri, string obsah)
+        private HttpWebRequest makeRequest(String uri, string obsah, string method)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.UserAgent = CLIENT_NAME;
-            request.Method = "POST";
+            request.Method = method;
             request.ContentType = DEFAULT_CONTENT_TYPE;
             request.ContentLength = obsah.Length;
 
-            //zapsani obsahu do requestu
-            Stream stream = request.GetRequestStream();
-            stream.Write(Encoding.ASCII.GetBytes(obsah), 0, obsah.Length);
-            stream.Close();
+            //zapsani obsahu do requestu - jen pro POST
+            if (method == "POST")
+            {
+                Stream stream = request.GetRequestStream();
+                stream.Write(Encoding.ASCII.GetBytes(obsah), 0, obsah.Length);
+                stream.Close();
+            }
 
             return request;
         }
@@ -406,8 +453,18 @@ namespace XChatter.XchatCommunicator
         /// <returns></returns>
         private String getHtmlString(String uri)
         {
-            WebClient wc = new WebClient();
-            return wc.DownloadString(uri);
+            //tohle dela timeout pri vic chatovacich oknech
+            //zkusim pres http request/response
+            //WebClient wc = new WebClient();
+            //return wc.DownloadString(uri);
+
+            HttpWebRequest req = makeRequest(uri, "","GET");
+            WebResponse resp = req.GetResponse();
+            Stream dataStream = resp.GetResponseStream();
+            StreamReader sr = new StreamReader(dataStream);
+            string responseData = sr.ReadToEnd();
+            return responseData;
+
         }
 
         /// <summary>

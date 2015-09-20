@@ -8,6 +8,7 @@ using System.Drawing;
 using XChatter.XchatCommunicator;
 using System.IO;
 using XChatter.Chat;
+using System.Threading;
 
 namespace XChatter.Main
 {
@@ -27,7 +28,7 @@ namespace XChatter.Main
         private XChatCommunicator xComm;
 
         /// <summary>
-        /// Instance chatovacích místností.
+        /// Seznam vláken, ve kterých běží jednotlivé chatovací místnosti.
         /// </summary>
         private List<Chat.Chat> rooms;
 
@@ -132,6 +133,16 @@ namespace XChatter.Main
         public void newRoom(RoomLink link)
         {
             Logger.dbgOut("Otevírám místnost " + link.Name+".");
+            //Thread t = new Thread(() =>
+            //{
+            //    Chat.Chat chat = new Chat.Chat(link);
+
+            //    System.Windows.Threading.Dispatcher.Run();
+            //});
+
+            //rooms.Add(t);
+            //t.SetApartmentState(ApartmentState.STA);
+            //t.Start();
             rooms.Add(new Chat.Chat(link));
             Logger.dbgOut("Počet otevřených místností: " + rooms.Count+".");
         }

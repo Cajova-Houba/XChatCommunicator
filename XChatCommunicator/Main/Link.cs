@@ -49,7 +49,7 @@ namespace XChatter.Main
         public String Info { get; set; }
 
         /// <summary>
-        /// Room ID.
+        /// Room ID ve tvaru "rid=*******".
         /// </summary>
         public String RID { get; set; }
 

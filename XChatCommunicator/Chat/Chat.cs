@@ -31,19 +31,9 @@ namespace XChatter.Chat
         /// </summary>
         private void openChatRoom()
         {
+            xComm.enterRoom(Link.RID);
             ChatWindow chw = new ChatWindow(this, Link);
             chw.Show();
-            //Thread t = new Thread(() =>
-            //{
-            //    ChatWindow chw = new ChatWindow(this, Link);
-            //    chw.Show();
-            //    chw.Closed += (sender, e) => chw.Dispatcher.InvokeShutdown();
-
-            //    System.Windows.Threading.Dispatcher.Run();
-            //});
-
-            //t.SetApartmentState(ApartmentState.STA);
-            //t.Start();
         }
 
         /// <summary>
