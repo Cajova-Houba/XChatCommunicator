@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,5 +50,21 @@ namespace XChatter.Chat
         {
             return Time + " " + Username + " " + Msg; ;
         }
+    }
+
+    /// <summary>
+    /// Kolekce, která se bude zobrazovat do ListBoxu v chatovacícm okně.
+    /// </summary>
+    public class MessageCollection : ObservableCollection<Message>
+    {
+        public MessageCollection(List<Message> msgs)
+        {
+            foreach (Message m in msgs)
+            {
+                this.Add(m);
+            }
+        }
+
+
     }
 }

@@ -23,6 +23,8 @@ namespace XChatter.Chat
         {
             Link = roomLink;
             xComm = XChatCommunicator.getCommunicator();
+
+            //vytvoření okna
             openChatRoom();
         }
 

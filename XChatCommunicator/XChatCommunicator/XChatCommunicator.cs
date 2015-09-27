@@ -488,7 +488,7 @@ namespace XChatter.XchatCommunicator
             string user;
             Color fontColor;
 
-            Logger.dbgOut("Parsuju zpravu..");
+            //Logger.dbgOut("Parsuju zpravu..");
 
             //parsování podle typu zprávy
             if (row[0] == '<')
@@ -522,8 +522,7 @@ namespace XChatter.XchatCommunicator
                     row.Replace(m.Groups[0].ToString(), "");
                 }
 
-                //nevim proč se tam znak ľ objevuje místo ž
-                msg = row.Substring(87).Replace("ľ","ž");
+                msg = row.Substring(87);
 
             }
             else
@@ -543,23 +542,28 @@ namespace XChatter.XchatCommunicator
                 
                 //regexp na barvu
                 Regex barva = new Regex("<font color=\"#(?<barva>[A-Fa-f0-9]{6})\"");
-                fontColor = (Color)ColorConverter.ConvertFromString("#FF" + barva.Match(row).Groups["barva"].ToString());
+                fontColor = Color.FromRgb(0, 0, 0); //defaultne cerna, kdyz vyjde match bude jina
+                Match barvaMatch = barva.Match(row);
+                if(barvaMatch.Success)
+                {
+                    fontColor = (Color)ColorConverter.ConvertFromString("#FF" + barvaMatch.Groups["barva"].ToString());
+                }
+
+                //smajlíci, zatím nahradím <img> tag za *cislosmajlika*
+                //regexp <img src=\"...\" alt=\"ddd\" title=\"ddd\">
+                Regex smajlik = new Regex("(?<imgTag><img src=\".*\" alt=\"(?<cislo>\\*\\d*\\*)\" title=\"\\*\\d*\\*\">)");
+                Match smajlici = smajlik.Match(msg);
+                while(smajlici.Success)
+                {
+                    msg = msg.Replace(smajlici.Groups["imgTag"].ToString(), smajlici.Groups["cislo"].ToString());
+
+                    smajlici = smajlici.NextMatch();
+                }
             }
 
-            Logger.dbgOut("Zprava: {" + type + "," + time + "," + fontColor.ToString() + "," + user + "," + msg + "}");
+            //Logger.dbgOut("Zprava: {" + type + "," + time + "," + fontColor.ToString() + "," + user + "," + msg + "}");
 
             return new Message(user, msg, time, type, fontColor);
-        }
-
-        /// <summary>
-        /// Metoda vrátí zadaný string převedený do kódování UTF8
-        /// </summary>
-        /// <param name="source">String k převedení.</param>
-        /// <returns>String v UTF8</returns>
-        private String getUT8String(String source)
-        {
-            byte[] bytes = Encoding.Default.GetBytes(source);
-            return Encoding.UTF8.GetString(bytes);
         }
 
         #endregion

@@ -73,7 +73,7 @@
                     
                     Grid.Row="1">
             <TextBox    x:Name="tbMessage"
-                        Width="370"
+                        Width="{Binding ElementName=lbChatView,Path=ActualWidth}"
                         
                         FontSize="14"
                         />
