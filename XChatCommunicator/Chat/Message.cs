@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace XChatter.Chat
 {
@@ -30,12 +31,18 @@ namespace XChatter.Chat
         /// </summary>
         public int Type { private set; get; }
 
-        public Message(string user, string msg, string time, int type)
+        /// <summary>
+        /// Barva písma.
+        /// </summary>
+        public SolidColorBrush FontColor { private set; get; }
+
+        public Message(string user, string msg, string time, int type, Color fontColor)
         {
             Username = user;
             Msg = msg;
             Time = time;
             Type = type;
+            FontColor = new SolidColorBrush(fontColor);
         }
 
         public override string ToString()

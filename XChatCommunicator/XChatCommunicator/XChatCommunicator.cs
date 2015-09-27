@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Drawing;
+using System.Windows.Media;
 using XChatter.Main;
 using XChatter.XchatCommunicator;
 using System.Text.RegularExpressions;
@@ -361,7 +361,7 @@ namespace XChatter.XchatCommunicator
 
                 List<Message> msgs = new List<Message>();
 
-                foreach (string row in rows)
+                foreach (String row in rows)
                 {
                     //kdyby se tam připletly nějaký blbosti
                     if (row.Length < 8) { continue; }
@@ -461,8 +461,8 @@ namespace XChatter.XchatCommunicator
             HttpWebRequest req = makeRequest(uri, "","GET");
             WebResponse resp = req.GetResponse();
             Stream dataStream = resp.GetResponseStream();
-            StreamReader sr = new StreamReader(dataStream);
-            string responseData = sr.ReadToEnd();
+            StreamReader sr = new StreamReader(dataStream,Encoding.GetEncoding(28592));
+            String responseData = sr.ReadToEnd();
             return responseData;
 
         }
@@ -484,8 +484,11 @@ namespace XChatter.XchatCommunicator
 
             int type;
             string time;
-            string msg;
+            String msg;
             string user;
+            Color fontColor;
+
+            Logger.dbgOut("Parsuju zpravu..");
 
             //parsování podle typu zprávy
             if (row[0] == '<')
@@ -493,6 +496,7 @@ namespace XChatter.XchatCommunicator
                 if (row.Length < 43) { return null; }
 
                 type = Message.SYSTEM_MESSAGE;
+                fontColor = Color.FromRgb(0,0,0);
                 time = row.Substring(35, 8);
                 user = "";
 
@@ -536,9 +540,26 @@ namespace XChatter.XchatCommunicator
                 //zpráva je mezi </b> a </span>
                 Regex zprava = new Regex("</b>(?<msg>.*)</span>");
                 msg = zprava.Match(row).Groups["msg"].ToString();
+                
+                //regexp na barvu
+                Regex barva = new Regex("<font color=\"#(?<barva>[A-Fa-f0-9]{6})\"");
+                fontColor = (Color)ColorConverter.ConvertFromString("#FF" + barva.Match(row).Groups["barva"].ToString());
             }
 
-            return new Message(user, msg, time, type);
+            Logger.dbgOut("Zprava: {" + type + "," + time + "," + fontColor.ToString() + "," + user + "," + msg + "}");
+
+            return new Message(user, msg, time, type, fontColor);
+        }
+
+        /// <summary>
+        /// Metoda vrátí zadaný string převedený do kódování UTF8
+        /// </summary>
+        /// <param name="source">String k převedení.</param>
+        /// <returns>String v UTF8</returns>
+        private String getUT8String(String source)
+        {
+            byte[] bytes = Encoding.Default.GetBytes(source);
+            return Encoding.UTF8.GetString(bytes);
         }
 
         #endregion
